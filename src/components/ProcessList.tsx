@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Search, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 interface Process {
   protocol: string;
@@ -79,7 +81,7 @@ export function ProcessList({ processes }: { processes: Process[] }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+      <div className="flex flex-col sm:flex-row gap-4 items-start justify-between">
         <div className="flex flex-col sm:flex-row gap-4 flex-1">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -100,17 +102,29 @@ export function ProcessList({ processes }: { processes: Process[] }) {
             />
           </div>
         </div>
-        <div className="flex gap-4 w-full sm:w-auto">
-          <select
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          <RadioGroup
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+            onValueChange={setStatusFilter}
+            className="flex flex-row items-center space-x-4"
           >
-            <option value="all">Todos os Status</option>
-            <option value="pendente">Pendente</option>
-            <option value="concluido">Concluído</option>
-            <option value="atrasado">Atrasado</option>
-          </select>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="all" id="all" />
+              <Label htmlFor="all">Todos</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="concluido" id="concluido" />
+              <Label htmlFor="concluido">Concluídos</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="pendente" id="pendente" />
+              <Label htmlFor="pendente">Pendentes</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="atrasado" id="atrasado" />
+              <Label htmlFor="atrasado">Atrasados</Label>
+            </div>
+          </RadioGroup>
           <Button onClick={handleExportToExcel}>Exportar para Excel</Button>
         </div>
       </div>
