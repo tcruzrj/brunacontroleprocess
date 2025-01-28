@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Pencil } from "lucide-react";
+import { Search, Pencil, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Process as ProcessType, processService } from "@/services/processService";
+import { toast } from "sonner";
 
 interface Process {
   protocol: string;
@@ -17,10 +19,12 @@ interface Process {
   observations: string;
 }
 
-export function ProcessList({ processes }: { processes: Process[] }) {
+export function ProcessList() {
+  const [processes, setProcesses] = useState<Process[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [entryDateFilter, setEntryDateFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const calculateRemainingDays = (deadline: string, status: string) => {
@@ -32,11 +36,41 @@ export function ProcessList({ processes }: { processes: Process[] }) {
     return diffDays;
   };
 
-  const getRemainingDaysLabel = (days: number) => {
+  const getRemainingDaysLabel = (days: number, status?: string) => {
+    if (status === "concluido") return "0 dias restantes";
     if (days < 0) return `${Math.abs(days)} dias atrasado`;
     if (days === 0) return "Vence hoje";
     if (days === 1) return "1 dia restante";
     return `${days} dias restantes`;
+  };
+
+  useEffect(() => {
+    loadProcesses();
+  }, []);
+
+  const loadProcesses = async () => {
+    try {
+      const data = await processService.getAll();
+      setProcesses(data);
+    } catch (error) {
+      console.error('Error loading processes:', error);
+      toast.error('Erro ao carregar processos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (protocol: string) => {
+    if (window.confirm('Tem certeza que deseja excluir este processo?')) {
+      try {
+        await processService.delete(protocol);
+        toast.success('Processo excluído com sucesso');
+        loadProcesses(); // Recarrega a lista
+      } catch (error) {
+        console.error('Error deleting process:', error);
+        toast.error('Erro ao excluir processo');
+      }
+    }
   };
 
   const filteredProcesses = processes.filter((process) => {
@@ -66,7 +100,7 @@ export function ProcessList({ processes }: { processes: Process[] }) {
           process.responsible,
           process.entryDate,
           process.deadline,
-          getRemainingDaysLabel(remainingDays),
+          getRemainingDaysLabel(remainingDays, process.status),
           process.status,
           `"${process.observations}"`,
         ].join(",");
@@ -80,57 +114,36 @@ export function ProcessList({ processes }: { processes: Process[] }) {
     link.click();
   };
 
+  const handleEdit = (process: Process) => {
+    navigate(`/edit/${process.protocol}`);
+  };
+
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row gap-4 items-start justify-between">
-        <div className="flex flex-col sm:flex-row gap-4 flex-1">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+    <div className="container mx-auto p-4">
+      <div className="flex gap-4 mb-4">
+        <div className="flex-1">
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Pesquisar por nome, protocolo ou responsável..."
+              placeholder="Pesquisar..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <div className="flex-1">
-            <Input
-              type="date"
-              value={entryDateFilter}
-              onChange={(e) => setEntryDateFilter(e.target.value)}
-              className="w-full"
-              placeholder="Filtrar por data de entrada"
+              className="pl-8"
             />
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-          <RadioGroup
-            value={statusFilter}
-            onValueChange={setStatusFilter}
-            className="flex flex-row items-center space-x-4"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="all" id="all" />
-              <Label htmlFor="all">Todos</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="concluido" id="concluido" />
-              <Label htmlFor="concluido">Concluídos</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="pendente" id="pendente" />
-              <Label htmlFor="pendente">Pendentes</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="atrasado" id="atrasado" />
-              <Label htmlFor="atrasado">Atrasados</Label>
-            </div>
-          </RadioGroup>
-          <Button onClick={handleExportToExcel}>Exportar para Excel</Button>
+        <div className="flex-1">
+          <Input
+            type="date"
+            value={entryDateFilter}
+            onChange={(e) => setEntryDateFilter(e.target.value)}
+            className="w-full"
+          />
         </div>
+        <Button onClick={handleExportToExcel}>Exportar para Excel</Button>
       </div>
 
-      <div className="border rounded-lg">
+      <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -139,59 +152,36 @@ export function ProcessList({ processes }: { processes: Process[] }) {
               <TableHead>Responsável</TableHead>
               <TableHead>Data de Entrada</TableHead>
               <TableHead>Prazo</TableHead>
-              <TableHead>Dias Restantes</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Observações</TableHead>
+              <TableHead>Dias Restantes</TableHead>
               <TableHead>Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredProcesses.map((process, index) => {
+            {filteredProcesses.map((process) => {
               const remainingDays = calculateRemainingDays(process.deadline, process.status);
+              const remainingDaysLabel = getRemainingDaysLabel(remainingDays, process.status);
+              
               return (
-                <TableRow key={index}>
+                <TableRow key={process.protocol}>
                   <TableCell>{process.protocol}</TableCell>
                   <TableCell>{process.name}</TableCell>
                   <TableCell>{process.responsible}</TableCell>
                   <TableCell>{process.entryDate}</TableCell>
                   <TableCell>{process.deadline}</TableCell>
+                  <TableCell>{process.status}</TableCell>
+                  <TableCell>{process.observations}</TableCell>
+                  <TableCell>{remainingDaysLabel}</TableCell>
                   <TableCell>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        remainingDays < 0
-                          ? "bg-red-100 text-red-800"
-                          : remainingDays <= 5
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-green-100 text-green-800"
-                      }`}
-                    >
-                      {getRemainingDaysLabel(remainingDays)}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        process.status === "concluido"
-                          ? "bg-green-100 text-green-800"
-                          : process.status === "atrasado"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {process.status === "concluido"
-                        ? "Concluído"
-                        : process.status === "atrasado"
-                        ? "Atrasado"
-                        : "Pendente"}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => navigate(`/edit/${process.protocol}`)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="icon" onClick={() => handleEdit(process)}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button variant="outline" size="icon" onClick={() => handleDelete(process.protocol)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               );

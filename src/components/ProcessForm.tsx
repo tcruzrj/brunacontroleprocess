@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
+import { useNavigate, useParams } from "react-router-dom";
+import { Process, processService } from "@/services/processService";
 
 interface ProcessFormData {
   protocol: string;
@@ -15,8 +17,7 @@ interface ProcessFormData {
   observations: string;
 }
 
-const initialFormData: ProcessFormData = {
-  protocol: "",
+const initialFormData: Omit<Process, 'protocol'> = {
   name: "",
   responsible: "",
   entryDate: "",
@@ -25,42 +26,63 @@ const initialFormData: ProcessFormData = {
   observations: "",
 };
 
-export function ProcessForm({ onSubmit }: { onSubmit: (data: ProcessFormData) => void }) {
-  const [formData, setFormData] = useState<ProcessFormData>(initialFormData);
-  const { toast } = useToast();
+export function ProcessForm() {
+  const [formData, setFormData] = useState<Omit<Process, 'protocol'>>(initialFormData);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { protocol } = useParams();
+  const isEditing = !!protocol;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (protocol) {
+      loadProcess(protocol);
+    }
+  }, [protocol]);
+
+  const loadProcess = async (protocol: string) => {
+    try {
+      setLoading(true);
+      const process = await processService.getByProtocol(protocol);
+      const { protocol: _, ...formData } = process;
+      setFormData(formData);
+    } catch (error) {
+      console.error('Error loading process:', error);
+      toast.error('Erro ao carregar processo');
+      navigate('/');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.protocol || !formData.name || !formData.entryDate || !formData.deadline) {
-      toast({
-        title: "Erro",
-        description: "Por favor, preencha todos os campos obrigatórios",
-        variant: "destructive",
-      });
+    if (!formData.name || !formData.entryDate || !formData.deadline) {
+      toast.error('Por favor, preencha todos os campos obrigatórios');
       return;
     }
 
-    onSubmit(formData);
-    setFormData(initialFormData);
-    toast({
-      title: "Sucesso",
-      description: "Processo adicionado com sucesso",
-    });
+    try {
+      setLoading(true);
+      if (isEditing && protocol) {
+        await processService.update(protocol, formData);
+        toast.success('Processo atualizado com sucesso');
+      } else {
+        await processService.create(formData);
+        toast.success('Processo criado com sucesso');
+      }
+      navigate('/');
+    } catch (error) {
+      console.error('Error saving process:', error);
+      toast.error('Erro ao salvar processo');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-6 bg-white rounded-lg shadow-sm">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="protocol">Número do Protocolo*</Label>
-          <Input
-            id="protocol"
-            value={formData.protocol}
-            onChange={(e) => setFormData({ ...formData, protocol: e.target.value })}
-            placeholder="Digite o número do protocolo"
-          />
-        </div>
         <div className="space-y-2">
           <Label htmlFor="name">Nome do Processo*</Label>
           <Input
@@ -121,7 +143,17 @@ export function ProcessForm({ onSubmit }: { onSubmit: (data: ProcessFormData) =>
           className="min-h-[100px]"
         />
       </div>
-      <Button type="submit" className="w-full">Adicionar Processo</Button>
+      <Button 
+        type="submit" 
+        className="w-full"
+        disabled={loading}
+      >
+        {loading ? (
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+        ) : (
+          isEditing ? 'Atualizar Processo' : 'Adicionar Processo'
+        )}
+      </Button>
     </form>
   );
 }
