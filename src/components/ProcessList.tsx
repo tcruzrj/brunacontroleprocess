@@ -23,7 +23,8 @@ export function ProcessList({ processes }: { processes: Process[] }) {
   const [statusFilter, setStatusFilter] = useState("all");
   const navigate = useNavigate();
 
-  const calculateRemainingDays = (deadline: string) => {
+  const calculateRemainingDays = (deadline: string, status: string) => {
+    if (status === "concluido") return 0;
     const today = new Date();
     const deadlineDate = new Date(deadline);
     const diffTime = deadlineDate.getTime() - today.getTime();
@@ -58,7 +59,7 @@ export function ProcessList({ processes }: { processes: Process[] }) {
     const csvContent = [
       headers.join(","),
       ...filteredProcesses.map((process) => {
-        const remainingDays = calculateRemainingDays(process.deadline);
+        const remainingDays = calculateRemainingDays(process.deadline, process.status);
         return [
           process.protocol,
           process.name,
@@ -145,7 +146,7 @@ export function ProcessList({ processes }: { processes: Process[] }) {
           </TableHeader>
           <TableBody>
             {filteredProcesses.map((process, index) => {
-              const remainingDays = calculateRemainingDays(process.deadline);
+              const remainingDays = calculateRemainingDays(process.deadline, process.status);
               return (
                 <TableRow key={index}>
                   <TableCell>{process.protocol}</TableCell>
