@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft, Save } from "lucide-react";
-import ProcessForm from "@/components/process/ProcessForm";
+import ProcessForm from "@/components/ProcessForm";
 
 interface ProcessData {
   protocol: string;
