@@ -17,6 +17,7 @@ interface Process {
 
 export function ProcessList({ processes }: { processes: Process[] }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [entryDateFilter, setEntryDateFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const navigate = useNavigate();
 
@@ -41,9 +42,13 @@ export function ProcessList({ processes }: { processes: Process[] }) {
       process.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       process.responsible.toLowerCase().includes(searchTerm.toLowerCase());
 
+    const matchesEntryDate = entryDateFilter
+      ? process.entryDate === entryDateFilter
+      : true;
+
     const matchesStatus = statusFilter === "all" || process.status === statusFilter;
 
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesEntryDate && matchesStatus;
   });
 
   const handleExportToExcel = () => {
@@ -75,14 +80,25 @@ export function ProcessList({ processes }: { processes: Process[] }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            placeholder="Pesquisar processos..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+        <div className="flex flex-col sm:flex-row gap-4 flex-1">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Pesquisar por nome, protocolo ou responsável..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <div className="flex-1">
+            <Input
+              type="date"
+              value={entryDateFilter}
+              onChange={(e) => setEntryDateFilter(e.target.value)}
+              className="w-full"
+              placeholder="Filtrar por data de entrada"
+            />
+          </div>
         </div>
         <div className="flex gap-4 w-full sm:w-auto">
           <select
