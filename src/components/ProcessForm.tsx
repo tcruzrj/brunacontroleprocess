@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
-import { Process, processService } from "@/services/processService";
+import { Process as ProcessType, processService } from "@/services/processService";
 
 interface ProcessFormData {
   protocol: string;
@@ -17,7 +17,7 @@ interface ProcessFormData {
   observations: string;
 }
 
-const initialFormData: Omit<Process, 'protocol'> = {
+const initialFormData: Omit<ProcessType, 'protocol'> = {
   name: "",
   responsible: "",
   entryDate: "",
@@ -27,7 +27,7 @@ const initialFormData: Omit<Process, 'protocol'> = {
 };
 
 export function ProcessForm() {
-  const [formData, setFormData] = useState<Omit<Process, 'protocol'>>(initialFormData);
+  const [formData, setFormData] = useState<Omit<ProcessType, 'protocol'>>(initialFormData);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { protocol } = useParams();
