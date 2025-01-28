@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search } from "lucide-react";
+import { Search, Pencil } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface Process {
   protocol: string;
@@ -17,6 +18,7 @@ interface Process {
 export function ProcessList({ processes }: { processes: Process[] }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const navigate = useNavigate();
 
   const filteredProcesses = processes.filter((process) => {
     const matchesSearch =
@@ -30,8 +32,7 @@ export function ProcessList({ processes }: { processes: Process[] }) {
   });
 
   const handleExportToExcel = () => {
-    // Convert processes to CSV
-    const headers = ["Protocol", "Name", "Responsible", "Entry Date", "Deadline", "Status", "Observations"];
+    const headers = ["Protocolo", "Nome", "Responsável", "Data de Entrada", "Prazo", "Status", "Observações"];
     const csvContent = [
       headers.join(","),
       ...filteredProcesses.map((process) =>
@@ -47,11 +48,10 @@ export function ProcessList({ processes }: { processes: Process[] }) {
       ),
     ].join("\n");
 
-    // Create and download the file
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "processes.csv";
+    link.download = "processos.csv";
     link.click();
   };
 
@@ -61,7 +61,7 @@ export function ProcessList({ processes }: { processes: Process[] }) {
         <div className="relative flex-1 w-full">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
-            placeholder="Search processes..."
+            placeholder="Pesquisar processos..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -73,12 +73,12 @@ export function ProcessList({ processes }: { processes: Process[] }) {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
-            <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="delayed">Delayed</option>
+            <option value="all">Todos os Status</option>
+            <option value="pendente">Pendente</option>
+            <option value="concluido">Concluído</option>
+            <option value="atrasado">Atrasado</option>
           </select>
-          <Button onClick={handleExportToExcel}>Export to Excel</Button>
+          <Button onClick={handleExportToExcel}>Exportar para Excel</Button>
         </div>
       </div>
 
@@ -86,12 +86,13 @@ export function ProcessList({ processes }: { processes: Process[] }) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Protocol</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Responsible</TableHead>
-              <TableHead>Entry Date</TableHead>
-              <TableHead>Deadline</TableHead>
+              <TableHead>Protocolo</TableHead>
+              <TableHead>Nome</TableHead>
+              <TableHead>Responsável</TableHead>
+              <TableHead>Data de Entrada</TableHead>
+              <TableHead>Prazo</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -105,15 +106,28 @@ export function ProcessList({ processes }: { processes: Process[] }) {
                 <TableCell>
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      process.status === "completed"
+                      process.status === "concluido"
                         ? "bg-green-100 text-green-800"
-                        : process.status === "delayed"
+                        : process.status === "atrasado"
                         ? "bg-red-100 text-red-800"
                         : "bg-yellow-100 text-yellow-800"
                     }`}
                   >
-                    {process.status.charAt(0).toUpperCase() + process.status.slice(1)}
+                    {process.status === "concluido"
+                      ? "Concluído"
+                      : process.status === "atrasado"
+                      ? "Atrasado"
+                      : "Pendente"}
                   </span>
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigate(`/edit/${process.protocol}`)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
