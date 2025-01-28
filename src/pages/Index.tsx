@@ -1,4 +1,4 @@
-import ProcessForm from "@/components/ProcessForm";
+import { ProcessForm } from "@/components/ProcessForm";
 import ProcessList from "@/components/ProcessList";
 import Dashboard from "@/components/Dashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
