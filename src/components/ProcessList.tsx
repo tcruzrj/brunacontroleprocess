@@ -6,20 +6,10 @@ import { Search, Pencil, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Process as ProcessType, processService } from "@/services/processService";
+import { Process, processService } from "@/services/processService";
 import { toast } from "sonner";
 
-interface Process {
-  protocol: string;
-  name: string;
-  responsible: string;
-  entryDate: string;
-  deadline: string;
-  status: string;
-  observations: string;
-}
-
-export function ProcessList() {
+export default function ProcessList() {
   const [processes, setProcesses] = useState<Process[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [entryDateFilter, setEntryDateFilter] = useState("");
