@@ -20,6 +20,21 @@ export function ProcessList({ processes }: { processes: Process[] }) {
   const [statusFilter, setStatusFilter] = useState("all");
   const navigate = useNavigate();
 
+  const calculateRemainingDays = (deadline: string) => {
+    const today = new Date();
+    const deadlineDate = new Date(deadline);
+    const diffTime = deadlineDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  const getRemainingDaysLabel = (days: number) => {
+    if (days < 0) return `${Math.abs(days)} dias atrasado`;
+    if (days === 0) return "Vence hoje";
+    if (days === 1) return "1 dia restante";
+    return `${days} dias restantes`;
+  };
+
   const filteredProcesses = processes.filter((process) => {
     const matchesSearch =
       process.protocol.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -32,20 +47,22 @@ export function ProcessList({ processes }: { processes: Process[] }) {
   });
 
   const handleExportToExcel = () => {
-    const headers = ["Protocolo", "Nome", "Responsável", "Data de Entrada", "Prazo", "Status", "Observações"];
+    const headers = ["Protocolo", "Nome", "Responsável", "Data de Entrada", "Prazo", "Dias Restantes", "Status", "Observações"];
     const csvContent = [
       headers.join(","),
-      ...filteredProcesses.map((process) =>
-        [
+      ...filteredProcesses.map((process) => {
+        const remainingDays = calculateRemainingDays(process.deadline);
+        return [
           process.protocol,
           process.name,
           process.responsible,
           process.entryDate,
           process.deadline,
+          getRemainingDaysLabel(remainingDays),
           process.status,
           `"${process.observations}"`,
-        ].join(",")
-      ),
+        ].join(",");
+      }),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -91,46 +108,63 @@ export function ProcessList({ processes }: { processes: Process[] }) {
               <TableHead>Responsável</TableHead>
               <TableHead>Data de Entrada</TableHead>
               <TableHead>Prazo</TableHead>
+              <TableHead>Dias Restantes</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredProcesses.map((process, index) => (
-              <TableRow key={index}>
-                <TableCell>{process.protocol}</TableCell>
-                <TableCell>{process.name}</TableCell>
-                <TableCell>{process.responsible}</TableCell>
-                <TableCell>{process.entryDate}</TableCell>
-                <TableCell>{process.deadline}</TableCell>
-                <TableCell>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      process.status === "concluido"
-                        ? "bg-green-100 text-green-800"
+            {filteredProcesses.map((process, index) => {
+              const remainingDays = calculateRemainingDays(process.deadline);
+              return (
+                <TableRow key={index}>
+                  <TableCell>{process.protocol}</TableCell>
+                  <TableCell>{process.name}</TableCell>
+                  <TableCell>{process.responsible}</TableCell>
+                  <TableCell>{process.entryDate}</TableCell>
+                  <TableCell>{process.deadline}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        remainingDays < 0
+                          ? "bg-red-100 text-red-800"
+                          : remainingDays <= 5
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-green-100 text-green-800"
+                      }`}
+                    >
+                      {getRemainingDaysLabel(remainingDays)}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        process.status === "concluido"
+                          ? "bg-green-100 text-green-800"
+                          : process.status === "atrasado"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {process.status === "concluido"
+                        ? "Concluído"
                         : process.status === "atrasado"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-yellow-100 text-yellow-800"
-                    }`}
-                  >
-                    {process.status === "concluido"
-                      ? "Concluído"
-                      : process.status === "atrasado"
-                      ? "Atrasado"
-                      : "Pendente"}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => navigate(`/edit/${process.protocol}`)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+                        ? "Atrasado"
+                        : "Pendente"}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => navigate(`/edit/${process.protocol}`)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
