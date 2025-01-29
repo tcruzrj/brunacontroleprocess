@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Pencil, Trash2 } from "lucide-react";
+import { Search, Pencil, Trash2, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -110,6 +110,13 @@ export default function ProcessList() {
 
   return (
     <div className="container mx-auto p-4">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold flex items-center gap-2">
+          Lista de Processos
+          <Heart className="h-6 w-6 text-red-500 fill-current" />
+        </h2>
+      </div>
+
       <div className="flex gap-4 mb-4">
         <div className="flex-1">
           <div className="relative">
@@ -131,6 +138,31 @@ export default function ProcessList() {
           />
         </div>
         <Button onClick={handleExportToExcel}>Exportar para Excel</Button>
+      </div>
+
+      <div className="mb-4">
+        <RadioGroup
+          value={statusFilter}
+          onValueChange={setStatusFilter}
+          className="flex flex-wrap gap-4"
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="all" id="all" />
+            <Label htmlFor="all">Todos</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="concluido" id="concluido" />
+            <Label htmlFor="concluido">Concluídos</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="pendente" id="pendente" />
+            <Label htmlFor="pendente">Pendentes</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="atrasado" id="atrasado" />
+            <Label htmlFor="atrasado">Atrasados</Label>
+          </div>
+        </RadioGroup>
       </div>
 
       <div className="rounded-md border">
