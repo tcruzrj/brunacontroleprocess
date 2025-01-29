@@ -1,22 +1,33 @@
-import { supabase } from '@/lib/supabase'
+import { supabase } from "@/integrations/supabase/client";
 
 export interface Process {
   protocol: string
   name: string
   responsible: string
-  entryDate: string
+  entrydate: string
   deadline: string
   status: string
   observations: string
 }
 
 export const processService = {
-  async getAll() {
+  /*async getAll() {
     const { data, error } = await supabase
       .from('processes')
-      .select('*')
+      .select('protocol, name, responsible, entryDate, deadline, status, observations')
       .order('entryDate', { ascending: false })
 
+    if (error) throw error
+    return data as Process[]
+  },*/
+
+  async getAll() {
+    console.log('getAll foi chamado'); // Adicionei um console.log aqui
+    const { data, error } = await supabase
+      .from('processes')
+      .select('protocol, name, responsible, entrydate, deadline, status, observations')
+      .order('entrydate', { ascending: false })
+  
     if (error) throw error
     return data as Process[]
   },
@@ -24,7 +35,7 @@ export const processService = {
   async getByProtocol(protocol: string) {
     const { data, error } = await supabase
       .from('processes')
-      .select('*')
+      .select('protocol, name, responsible, entrydate, deadline, status, observations')
       .eq('protocol', protocol)
       .single()
 
@@ -71,10 +82,23 @@ export const processService = {
       .insert([process])
 
     if (error) {
-      console.error('Error saving process:', error)
+      console.error('2 -Error saving process:', error)
       throw error
     }
 
     return data
   }
+}
+
+export async function saveProcess(data: any) {
+  const { data: result, error } = await supabase
+    .from('processes')
+    .insert([data]);
+
+  if (error) {
+    console.error('3 - Error saving process:', error);
+    throw error;
+  }
+
+  return result;
 }

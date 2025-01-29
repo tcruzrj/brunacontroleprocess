@@ -2,18 +2,15 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft, Save } from "lucide-react";
 import { ProcessForm } from "@/components/ProcessForm";
+import { saveProcess } from '../services/processService';
 
 interface ProcessData {
   protocol: string;
   name: string;
   responsible: string;
-  entryDate: string;
+  entrydate: string;
   deadline: string;
   status: string;
   observations: string;
@@ -21,6 +18,15 @@ interface ProcessData {
 
 export default function EditProcess() {
   const navigate = useNavigate();
+
+  const handleSave = async (data: any) => {
+    try {
+      const result = await saveProcess(data);
+      console.log('Process saved successfully:', result);
+    } catch (error) {
+      console.error('1 - Failed to save process:', error);
+    }
+  };
 
   return (
     <div className="container mx-auto py-6">

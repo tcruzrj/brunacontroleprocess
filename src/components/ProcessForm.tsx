@@ -11,7 +11,7 @@ interface ProcessFormData {
   protocol: string;
   name: string;
   responsible: string;
-  entryDate: string;
+  entrydate: string;
   deadline: string;
   status: string;
   observations: string;
@@ -20,7 +20,7 @@ interface ProcessFormData {
 const initialFormData: Omit<ProcessType, 'protocol'> = {
   name: "",
   responsible: "",
-  entryDate: "",
+  entrydate: "",
   deadline: "",
   status: "pendente",
   observations: "",
@@ -47,7 +47,7 @@ export function ProcessForm() {
       setFormData(formData);
     } catch (error) {
       console.error('Error loading process:', error);
-      toast.error('Erro ao carregar processo');
+      toast.error('2 -Erro ao carregar processo');
       navigate('/');
     } finally {
       setLoading(false);
@@ -57,7 +57,7 @@ export function ProcessForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.entryDate || !formData.deadline) {
+    if (!formData.name || !formData.entrydate || !formData.deadline) {
       toast.error('Por favor, preencha todos os campos obrigatórios');
       return;
     }
@@ -74,7 +74,7 @@ export function ProcessForm() {
       navigate('/');
     } catch (error) {
       console.error('Error saving process:', error);
-      toast.error('Erro ao salvar processo');
+      toast.error('3 - Erro ao salvar processo');
     } finally {
       setLoading(false);
     }
@@ -102,12 +102,12 @@ export function ProcessForm() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="entryDate">Data de Entrada*</Label>
+          <Label htmlFor="entrydate">Data de Entrada*</Label>
           <Input
-            id="entryDate"
+            id="entrydate"
             type="date"
-            value={formData.entryDate}
-            onChange={(e) => setFormData({ ...formData, entryDate: e.target.value })}
+            value={formData.entrydate}
+            onChange={(e) => setFormData({ ...formData, entrydate: e.target.value })}
           />
         </div>
         <div className="space-y-2">

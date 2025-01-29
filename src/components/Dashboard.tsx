@@ -7,12 +7,12 @@ export default function Dashboard() {
   const [processes, setProcesses] = useState<Process[]>([]);
 
   useEffect(() => {
-    const fetchProcesses = async () => {
+   const fetchProcesses = async () => {
       try {
         const data = await processService.getAll();
         setProcesses(data);
       } catch (error) {
-        console.error("Erro ao carregar processos:", error);
+        console.error("1 - Erro ao carregar processos:", error);
       }
     };
 

@@ -41,10 +41,13 @@ export default function ProcessList() {
   const loadProcesses = async () => {
     try {
       const data = await processService.getAll();
+      console.log('Dados carregados:', data); // Adicionei um console.log aqui
+
       setProcesses(data);
     } catch (error) {
+      console.error('Erro real:', error); // Adicionei um console.log aqui
       console.error('Error loading processes:', error);
-      toast.error('Erro ao carregar processos');
+      toast.error('5 - Erro ao carregar processos');
     } finally {
       setLoading(false);
     }
@@ -58,7 +61,7 @@ export default function ProcessList() {
         loadProcesses(); // Recarrega a lista
       } catch (error) {
         console.error('Error deleting process:', error);
-        toast.error('Erro ao excluir processo');
+        toast.error('5 -  excluir processo');
       }
     }
   };
@@ -88,7 +91,7 @@ export default function ProcessList() {
           process.protocol,
           process.name,
           process.responsible,
-          process.entryDate,
+          process.entrydate,
           process.deadline,
           getRemainingDaysLabel(remainingDays, process.status),
           process.status,
@@ -190,7 +193,7 @@ export default function ProcessList() {
                   <TableCell>{process.protocol}</TableCell>
                   <TableCell>{process.name}</TableCell>
                   <TableCell>{process.responsible}</TableCell>
-                  <TableCell>{process.entryDate}</TableCell>
+                  <TableCell>{process.entrydate}</TableCell>
                   <TableCell>{process.deadline}</TableCell>
                   <TableCell>{process.status}</TableCell>
                   <TableCell>{process.observations}</TableCell>

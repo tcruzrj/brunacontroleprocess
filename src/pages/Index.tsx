@@ -2,6 +2,17 @@ import { ProcessForm } from "@/components/ProcessForm";
 import ProcessList from "@/components/ProcessList";
 import Dashboard from "@/components/Dashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BrowserRouter } from 'react-router-dom';
+
+/*const router = (
+  <BrowserRouter basename={process.env.PUBLIC_URL} future={{ v7_relativeSplatPath: true }}>
+    { //Seu aplicativo aqui }
+  </BrowserRouter>
+);*/
+
+//const env = window.process.env;
+
+
 
 const Index = () => {
   return (
