@@ -63,5 +63,18 @@ export const processService = {
       .eq('protocol', protocol)
 
     if (error) throw error
+  },
+
+  async saveProcess(process: Process) {
+    const { data, error } = await supabase
+      .from('processes')
+      .insert([process])
+
+    if (error) {
+      console.error('Error saving process:', error)
+      throw error
+    }
+
+    return data
   }
 }
