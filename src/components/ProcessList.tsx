@@ -8,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Process, processService } from "@/services/processService";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export default function ProcessList() {
   const [processes, setProcesses] = useState<Process[]>([]);
@@ -16,6 +17,19 @@ export default function ProcessList() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "pendente":
+        return "bg-[#F2FCE2] text-green-800";
+      case "concluido":
+        return "bg-[#D3E4FD] text-blue-800";
+      case "atrasado":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
 
   const calculateRemainingDays = (deadline: string, status: string) => {
     if (status === "concluido") return 0;
@@ -81,38 +95,12 @@ export default function ProcessList() {
     return matchesSearch && matchesEntryDate && matchesStatus;
   });
 
-  const handleExportToExcel = () => {
-    const headers = ["Protocolo", "Nome", "Responsável", "Data de Entrada", "Prazo", "Dias Restantes", "Status", "Observações"];
-    const csvContent = [
-      headers.join(","),
-      ...filteredProcesses.map((process) => {
-        const remainingDays = calculateRemainingDays(process.deadline, process.status);
-        return [
-          process.protocol,
-          process.name,
-          process.responsible,
-          process.entrydate,
-          process.deadline,
-          getRemainingDaysLabel(remainingDays, process.status),
-          process.status,
-          `"${process.observations}"`,
-        ].join(",");
-      }),
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "processos.csv";
-    link.click();
-  };
-
   const handleEdit = (process: Process) => {
     navigate(`/edit/${process.protocol}`);
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="space-y-4">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold flex items-center gap-2">
           Lista de Processos
@@ -140,7 +128,6 @@ export default function ProcessList() {
             className="w-full"
           />
         </div>
-        <Button onClick={handleExportToExcel}>Exportar para Excel</Button>
       </div>
 
       <div className="mb-4">
@@ -195,7 +182,11 @@ export default function ProcessList() {
                   <TableCell>{process.responsible}</TableCell>
                   <TableCell>{process.entrydate}</TableCell>
                   <TableCell>{process.deadline}</TableCell>
-                  <TableCell>{process.status}</TableCell>
+                  <TableCell>
+                    <span className={cn("px-2 py-1 rounded-full text-xs font-medium", getStatusColor(process.status))}>
+                      {process.status}
+                    </span>
+                  </TableCell>
                   <TableCell>{process.observations}</TableCell>
                   <TableCell>{remainingDaysLabel}</TableCell>
                   <TableCell>

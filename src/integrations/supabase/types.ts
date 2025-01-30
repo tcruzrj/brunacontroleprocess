@@ -13,7 +13,7 @@ export type Database = {
         Row: {
           created_at: string
           deadline: string
-          entry_date: string
+          entrydate: string | null
           name: string
           observations: string | null
           protocol: string
@@ -23,7 +23,7 @@ export type Database = {
         Insert: {
           created_at?: string
           deadline: string
-          entry_date: string
+          entrydate?: string | null
           name: string
           observations?: string | null
           protocol: string
@@ -33,7 +33,7 @@ export type Database = {
         Update: {
           created_at?: string
           deadline?: string
-          entry_date?: string
+          entrydate?: string | null
           name?: string
           observations?: string | null
           protocol?: string

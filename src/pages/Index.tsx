@@ -2,17 +2,6 @@ import { ProcessForm } from "@/components/ProcessForm";
 import ProcessList from "@/components/ProcessList";
 import Dashboard from "@/components/Dashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BrowserRouter } from 'react-router-dom';
-
-/*const router = (
-  <BrowserRouter basename={process.env.PUBLIC_URL} future={{ v7_relativeSplatPath: true }}>
-    { //Seu aplicativo aqui }
-  </BrowserRouter>
-);*/
-
-//const env = window.process.env;
-
-
 
 const Index = () => {
   return (
@@ -20,18 +9,17 @@ const Index = () => {
       <h1 className="text-3xl font-bold mb-6">Controle de Processos</h1>
       <Tabs defaultValue="list">
         <TabsList className="mb-4">
-          <TabsTrigger value="list">Lista de Processos</TabsTrigger>
+          <TabsTrigger value="list">Processos</TabsTrigger>
           <TabsTrigger value="new">Novo Processo</TabsTrigger>
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
         </TabsList>
         <TabsContent value="list">
-          <ProcessList />
+          <div className="space-y-6">
+            <Dashboard />
+            <ProcessList />
+          </div>
         </TabsContent>
         <TabsContent value="new">
           <ProcessForm />
-        </TabsContent>
-        <TabsContent value="dashboard">
-          <Dashboard />
         </TabsContent>
       </Tabs>
     </div>

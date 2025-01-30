@@ -25,8 +25,8 @@ export default function Dashboard() {
   const delayedProcesses = processes.filter((p) => p.status === "atrasado").length;
 
   return (
-    <div className="grid gap-4 md:grid-cols-3">
-      <Card>
+    <div className="grid gap-4 md:grid-cols-4">
+      <Card className="bg-[#F1F0FB]">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total de Processos</CardTitle>
           <Clock className="h-4 w-4 text-muted-foreground" />
@@ -35,22 +35,31 @@ export default function Dashboard() {
           <div className="text-2xl font-bold">{totalProcesses}</div>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="bg-[#D3E4FD]">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Processos Concluídos</CardTitle>
-          <CheckCircle className="h-4 w-4 text-green-500" />
+          <CheckCircle className="h-4 w-4 text-blue-600" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{completedProcesses}</div>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="bg-[#F2FCE2]">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Processos Pendentes</CardTitle>
-          <AlertTriangle className="h-4 w-4 text-yellow-500" />
+          <Clock className="h-4 w-4 text-green-600" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{pendingProcesses}</div>
+        </CardContent>
+      </Card>
+      <Card className="bg-red-100">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Processos Atrasados</CardTitle>
+          <AlertTriangle className="h-4 w-4 text-red-600" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{delayedProcesses}</div>
         </CardContent>
       </Card>
     </div>
