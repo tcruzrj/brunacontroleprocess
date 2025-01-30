@@ -87,7 +87,7 @@ export default function ProcessList() {
       process.responsible.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesEntryDate = entryDateFilter
-      ? process.entryDate === entryDateFilter
+      ? process.entrydate === entryDateFilter
       : true;
 
     const matchesStatus = statusFilter === "all" || process.status === statusFilter;
