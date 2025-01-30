@@ -7,7 +7,7 @@ export default function Dashboard() {
   const [processes, setProcesses] = useState<Process[]>([]);
 
   useEffect(() => {
-   const fetchProcesses = async () => {
+    const fetchProcesses = async () => {
       try {
         const data = await processService.getAll();
         setProcesses(data);
@@ -25,7 +25,7 @@ export default function Dashboard() {
   const delayedProcesses = processes.filter((p) => p.status === "atrasado").length;
 
   return (
-    <div className="grid gap-4 md:grid-cols-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       <Card className="bg-[#F1F0FB]">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total de Processos</CardTitle>

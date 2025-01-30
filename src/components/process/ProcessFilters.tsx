@@ -22,7 +22,7 @@ export const ProcessFilters = ({
 }: ProcessFiltersProps) => {
   return (
     <div className="space-y-4">
-      <div className="flex gap-4 mb-4">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         <div className="flex-1">
           <div className="relative">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -48,7 +48,7 @@ export const ProcessFilters = ({
         <RadioGroup
           value={statusFilter}
           onValueChange={setStatusFilter}
-          className="flex flex-wrap gap-4"
+          className="flex flex-wrap gap-3"
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="all" id="all" />

@@ -42,19 +42,19 @@ export const ProcessTable = ({ processes, onEdit, onDelete }: ProcessTableProps)
   };
 
   return (
-    <div className="rounded-md border">
+    <div className="overflow-x-auto rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Protocolo</TableHead>
-            <TableHead>Nome</TableHead>
-            <TableHead>Responsável</TableHead>
-            <TableHead>Data de Entrada</TableHead>
-            <TableHead>Prazo</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Observações</TableHead>
-            <TableHead>Dias Restantes</TableHead>
-            <TableHead>Ações</TableHead>
+            <TableHead className="whitespace-nowrap">Protocolo</TableHead>
+            <TableHead className="whitespace-nowrap">Nome</TableHead>
+            <TableHead className="whitespace-nowrap">Responsável</TableHead>
+            <TableHead className="whitespace-nowrap">Data de Entrada</TableHead>
+            <TableHead className="whitespace-nowrap">Prazo</TableHead>
+            <TableHead className="whitespace-nowrap">Status</TableHead>
+            <TableHead className="whitespace-nowrap">Observações</TableHead>
+            <TableHead className="whitespace-nowrap">Dias Restantes</TableHead>
+            <TableHead className="whitespace-nowrap">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -64,18 +64,18 @@ export const ProcessTable = ({ processes, onEdit, onDelete }: ProcessTableProps)
             
             return (
               <TableRow key={process.protocol}>
-                <TableCell>{process.protocol}</TableCell>
-                <TableCell>{process.name}</TableCell>
-                <TableCell>{process.responsible}</TableCell>
-                <TableCell>{process.entrydate}</TableCell>
-                <TableCell>{process.deadline}</TableCell>
-                <TableCell>
+                <TableCell className="whitespace-nowrap">{process.protocol}</TableCell>
+                <TableCell className="whitespace-nowrap">{process.name}</TableCell>
+                <TableCell className="whitespace-nowrap">{process.responsible}</TableCell>
+                <TableCell className="whitespace-nowrap">{process.entrydate}</TableCell>
+                <TableCell className="whitespace-nowrap">{process.deadline}</TableCell>
+                <TableCell className="whitespace-nowrap">
                   <span className={cn("px-2 py-1 rounded-full text-xs font-medium", getStatusColor(process.status))}>
                     {process.status}
                   </span>
                 </TableCell>
-                <TableCell>{process.observations}</TableCell>
-                <TableCell>{remainingDaysLabel}</TableCell>
+                <TableCell className="max-w-[200px] truncate">{process.observations}</TableCell>
+                <TableCell className="whitespace-nowrap">{remainingDaysLabel}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">
                     <Button variant="outline" size="icon" onClick={() => onEdit(process)}>
