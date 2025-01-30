@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart } from "lucide-react";
+import { Heart, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Process, processService } from "@/services/processService";
 import { toast } from "sonner";
@@ -70,6 +70,15 @@ export default function ProcessList() {
         <h2 className="text-2xl font-bold flex items-center gap-2">
           Lista de Processos
           <Heart className="h-6 w-6 text-red-500 fill-current" />
+          <a 
+            href="https://brunacontroleprocess.lovable.app" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-700"
+          >
+            <FileText className="h-4 w-4" />
+            Acessar Sistema
+          </a>
         </h2>
       </div>
 
